@@ -38,7 +38,7 @@ jobs:
           platforms: linux/${{ matrix.arch }}
       - name: Setup Docker Buildx
         id: buildx
-        uses: docker/setup-buildx-action@v2
+        uses: docker/setup-buildx-action@v3
       - name: Build and push
         uses: docker/build-push-action@v3
         with:
