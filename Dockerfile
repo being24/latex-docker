@@ -48,7 +48,7 @@ RUN tlmgr update --self --all && \
     tar -xzvf tex-fmt.tar.gz && \
     mv tex-fmt /usr/local/bin && \
     rm tex-fmt.tar.gz && \
-    useradd -m -u 1000 -s /bin/bash latex
+    useradd -m -u 1001 -s /bin/bash latex
 
 USER latex
 
