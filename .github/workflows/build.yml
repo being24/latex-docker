@@ -14,6 +14,8 @@ on:
 jobs:
   prepare:
     runs-on: ubuntu-22.04
+    outputs:
+      image_version: ${{ steps.set_version.outputs.image_version }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -26,7 +28,8 @@ jobs:
           while git show-ref --tags | grep -q "refs/tags/${YY}.${MM}.${REV}"; do
           REV=$((REV+1))
           done
-          echo "IMAGE_VERSION=${YY}.${MM}.${REV}" >> $GITHUB_ENV
+          echo "::set-output name=image_version::${YY}.${MM}.${REV}"
+
       - name: Login to ghcr.io
         uses: docker/login-action@v3
         with:
@@ -48,7 +51,7 @@ jobs:
           provenance: false
           tags: |
             ghcr.io/being24/latex-docker:latest-amd64
-            ghcr.io/being24/latex-docker:${{ env.IMAGE_VERSION }}-amd64
+            ghcr.io/being24/latex-docker:${{ needs.prepare.outputs.image_version }}-amd64
 
   build-arm64:
     runs-on: ubuntu-22.04-arm
@@ -64,7 +67,7 @@ jobs:
           provenance: false
           tags: |
             ghcr.io/being24/latex-docker:latest-arm64
-            ghcr.io/being24/latex-docker:${{ env.IMAGE_VERSION }}-arm64
+            ghcr.io/being24/latex-docker:${{ needs.prepare.outputs.image_version }}-arm64
 
   manifest:
     runs-on: ubuntu-22.04
@@ -92,15 +95,15 @@ jobs:
       - name: Create and push manifest images to ghcr.io
         uses: Noelware/docker-manifest-action@0.4.2
         with:
-          inputs: ghcr.io/being24/latex-docker:latest,ghcr.io/being24/latex-docker:${{ env.IMAGE_VERSION }}
-          # inputs: ghcr.io/being24/latex-docker:latest,ghcr.io/being24/latex-docker:${{ env.IMAGE_VERSION }},ghcr.io/being24/latex-docker:2023-frozen
+          inputs: ghcr.io/being24/latex-docker:latest,ghcr.io/being24/latex-docker:${{ needs.prepare.outputs.image_version }}
+          # inputs: ghcr.io/being24/latex-docker:latest,ghcr.io/being24/latex-docker:${{ needs.prepare.outputs.image_version }},ghcr.io/being24/latex-docker:2023-frozen
           images: ghcr.io/being24/latex-docker:latest-amd64,ghcr.io/being24/latex-docker:latest-arm64
           push: true
       - name: Create GitHub Releases
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          TAG=${{ env.IMAGE_VERSION }}
+          TAG=${{ needs.prepare.outputs.image_version }}
           if git show-ref --tags | grep -q "refs/tags/${TAG}"
           then
             echo "${TAG} exists. Skipped"
