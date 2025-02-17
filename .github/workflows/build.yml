@@ -37,9 +37,17 @@ jobs:
           username: ${{ github.repository_owner }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-  build-amd64:
+  echo_version:
     runs-on: ubuntu-22.04
     needs: prepare
+    steps:
+      - name: echo version
+        run: echo ${{ needs.prepare.outputs.image_version }}
+
+
+  build-amd64:
+    runs-on: ubuntu-22.04
+    needs: [prepare, echo_version]
     steps:
       - name: Build and push
         uses: docker/build-push-action@v6
@@ -53,16 +61,9 @@ jobs:
             ghcr.io/being24/latex-docker:latest-amd64
             ghcr.io/being24/latex-docker:${{ needs.prepare.outputs.image_version }}-amd64
 
-  echo_version:
-    runs-on: ubuntu-22.04
-    needs: prepare
-    steps:
-      - name: echo version
-        run: echo ${{ needs.prepare.outputs.image_version }}
-
   build-arm64:
     runs-on: ubuntu-22.04-arm
-    needs: prepare
+    needs: [prepare, echo_version]
     steps:
       - name: Build and push
         uses: docker/build-push-action@v6
