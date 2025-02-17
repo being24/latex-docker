@@ -6,10 +6,10 @@ on:
   push:
     branches:
       - master
-      - develop
     paths:
       - 'Dockerfile'
       - '.github/workflows/build.yml'
+  workflow_dispatch:
 
 jobs:
   prepare:
