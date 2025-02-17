@@ -38,17 +38,12 @@ jobs:
           username: ${{ github.repository_owner }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-  echo_version:
-    runs-on: ubuntu-22.04
-    needs: prepare
-    steps:
-      - name: echo version
-        run: echo ${{ needs.prepare.outputs.IMAGE_VERSION }}
-
   build-amd64:
     runs-on: ubuntu-22.04
-    needs: [prepare, echo_version]
+    needs: [prepare]
     steps:
+      - name: checkout
+        uses: actions/checkout@v4
       - name: Build and push
         uses: docker/build-push-action@v6
         with:
@@ -63,8 +58,10 @@ jobs:
 
   build-arm64:
     runs-on: ubuntu-22.04-arm
-    needs: [prepare, echo_version]
+    needs: [prepare]
     steps:
+      - name: checkout
+        uses: actions/checkout@v4
       - name: Build and push
         uses: docker/build-push-action@v6
         with:
