@@ -31,6 +31,10 @@ jobs:
           done
           echo "IMAGE_VERSION=${YY}.${MM}.${REV}" >> $GITHUB_OUTPUT
 
+  build-amd64:
+    runs-on: ubuntu-22.04
+    needs: [prepare]
+    steps:
       - name: Login to ghcr.io
         uses: docker/login-action@v3
         with:
@@ -38,12 +42,9 @@ jobs:
           username: ${{ github.repository_owner }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-  build-amd64:
-    runs-on: ubuntu-22.04
-    needs: [prepare]
-    steps:
       - name: checkout
         uses: actions/checkout@v4
+
       - name: Build and push
         uses: docker/build-push-action@v6
         with:
@@ -60,8 +61,16 @@ jobs:
     runs-on: ubuntu-22.04-arm
     needs: [prepare]
     steps:
+      - name: Login to ghcr.io
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.repository_owner }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
       - name: checkout
         uses: actions/checkout@v4
+
       - name: Build and push
         uses: docker/build-push-action@v6
         with:
