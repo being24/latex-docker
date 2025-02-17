@@ -15,7 +15,7 @@ jobs:
   prepare:
     runs-on: ubuntu-22.04
     outputs:
-      image_version: ${{ steps.set_version.outputs.image_version }}
+      image_version: ${{ steps.outputs.image_version }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -28,7 +28,7 @@ jobs:
           while git show-ref --tags | grep -q "refs/tags/${YY}.${MM}.${REV}"; do
           REV=$((REV+1))
           done
-          echo "::set-output name=image_version::${YY}.${MM}.${REV}"
+          echo "IMAGE_VERSION=${YY}.${MM}.${REV}" >> $GITHUB_OUTPUT
 
       - name: Login to ghcr.io
         uses: docker/login-action@v3
@@ -52,6 +52,13 @@ jobs:
           tags: |
             ghcr.io/being24/latex-docker:latest-amd64
             ghcr.io/being24/latex-docker:${{ needs.prepare.outputs.image_version }}-amd64
+
+  echo_version:
+    runs-on: ubuntu-22.04
+    needs: prepare
+    steps:
+      - name: echo version
+        run: echo ${{ needs.prepare.outputs.image_version }}
 
   build-arm64:
     runs-on: ubuntu-22.04-arm
