@@ -1,0 +1,112 @@
+name: Build image
+
+on:
+  push:
+    branches:
+      - master
+    paths:
+      - 'Dockerfile-frozen'
+      - '.github/workflows/build.yml'
+  workflow_dispatch:
+
+jobs:
+  prepare:
+    runs-on: ubuntu-latest
+    outputs:
+      image_version: ${{ steps.create_tag.outputs.IMAGE_VERSION }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: -1
+      - name: create tag
+        id: create_tag
+        run: |
+          TEXLIVE_VERSION=$(grep 'ARG TEXLIVE_VERSION' Dockerfile-frozen | cut -d '=' -f 2)
+          IMAGE_VERSION="${TEXLIVE_VERSION}-frozen"
+          echo "IMAGE_VERSION=${IMAGE_VERSION}" >> $GITHUB_OUTPUT
+
+  build-amd64:
+    runs-on: ubuntu-24.04
+    needs: [prepare]
+    steps:
+      - name: Login to ghcr.io
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.repository_owner }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: checkout
+        uses: actions/checkout@v4
+
+      - name: Build and push
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: ./Dockerfile
+          platforms: linux/amd64
+          push: ${{ github.event_name != 'pull_request' }}
+          provenance: false
+          tags: |
+            ghcr.io/being24/latex-docker:latest-amd64
+            ghcr.io/being24/latex-docker:${{ needs.prepare.outputs.IMAGE_VERSION }}-amd64
+
+  build-arm64:
+    runs-on: ubuntu-24.04-arm
+    needs: [prepare]
+    steps:
+      - name: Login to ghcr.io
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.repository_owner }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: checkout
+        uses: actions/checkout@v4
+
+      - name: Build and push
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: ./Dockerfile
+          platforms: linux/arm64
+          push: ${{ github.event_name != 'pull_request' }}
+          provenance: false
+          tags: |
+            ghcr.io/being24/latex-docker:latest-arm64
+            ghcr.io/being24/latex-docker:${{ needs.prepare.outputs.IMAGE_VERSION }}-arm64
+
+  manifest:
+    runs-on: ubuntu-latest
+    needs: [prepare, build-amd64, build-arm64]
+    if: ${{ github.event_name != 'pull_request' }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: -1
+      - name: Login to ghcr.io
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.repository_owner }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Create and push manifest images to ghcr.io
+        uses: Noelware/docker-manifest-action@0.4.2
+        with:
+          inputs: ghcr.io/being24/latex-docker:latest-frozen,ghcr.io/being24/latex-docker:${{ needs.prepare.outputs.IMAGE_VERSION }}
+          images: ghcr.io/being24/latex-docker:latest-frozen-amd64,ghcr.io/being24/latex-docker:latest-frozen-arm64
+          push: true
+      - name: Create GitHub Releases
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          TAG=${{ needs.prepare.outputs.IMAGE_VERSION }}
+          if git show-ref --tags | grep -q "refs/tags/${TAG}"
+          then
+            echo "${TAG} exists. Skipped"
+            exit 0
+          fi
+          git tag ${TAG}
+          git push --tags
+          gh release create ${TAG} --generate-notes
