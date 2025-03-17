@@ -21,7 +21,7 @@ jobs:
       - name: create tag
         id: create_tag
         run: |
-          TEXLIVE_VERSION=$(grep 'ARG TEXLIVE_VERSION' Dockerfile-frozen | cut -d '=' -f 2)
+          TEXLIVE_VERSION=$(grep 'ARG TEXLIVE_VERSION' Dockerfile-frozen | cut -d '=' -f 2 | tr -d '\r')
           IMAGE_VERSION="${TEXLIVE_VERSION}-frozen"
           echo "IMAGE_VERSION=${IMAGE_VERSION}" >> $GITHUB_OUTPUT
 
