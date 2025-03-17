@@ -1,6 +1,6 @@
 FROM ghcr.io/being24/latex-docker-base:latest
 
-ARG TEXLIVE_VERSION=2024
+ARG TEXLIVE_VERSION=2025
 
 ENV DEBIAN_FRONTEND=noninteractive
 ENV DEBCONF_NOWARNINGS=yes
