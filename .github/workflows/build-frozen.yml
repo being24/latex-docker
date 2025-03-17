@@ -1,4 +1,4 @@
-name: Build image
+name: Build frozen image
 
 on:
   push:
