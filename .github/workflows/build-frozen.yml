@@ -48,7 +48,7 @@ jobs:
           push: ${{ github.event_name != 'pull_request' }}
           provenance: false
           tags: |
-            ghcr.io/being24/latex-docker:latest-amd64
+            ghcr.io/being24/latex-docker:latest-frozen-amd64
             ghcr.io/being24/latex-docker:${{ needs.prepare.outputs.IMAGE_VERSION }}-amd64
 
   build-arm64:
@@ -74,7 +74,7 @@ jobs:
           push: ${{ github.event_name != 'pull_request' }}
           provenance: false
           tags: |
-            ghcr.io/being24/latex-docker:latest-arm64
+            ghcr.io/being24/latex-docker:latest-frozen-arm64
             ghcr.io/being24/latex-docker:${{ needs.prepare.outputs.IMAGE_VERSION }}-arm64
 
   manifest:
