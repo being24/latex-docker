@@ -6,7 +6,7 @@ on:
       - master
     paths:
       - 'Dockerfile-frozen'
-      - '.github/workflows/build.yml'
+      - '.github/workflows/build-frozen.yml'
   workflow_dispatch:
 
 jobs:
