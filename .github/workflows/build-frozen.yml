@@ -92,7 +92,7 @@ jobs:
           username: ${{ github.repository_owner }}
           password: ${{ secrets.GITHUB_TOKEN }}
       - name: Create and push manifest images to ghcr.io
-        uses: Noelware/docker-manifest-action@0.4.3
+        uses: Noelware/docker-manifest-action@1.0.0
         with:
           inputs: ghcr.io/being24/latex-docker:latest-frozen,ghcr.io/being24/latex-docker:${{ needs.prepare.outputs.IMAGE_VERSION }}
           images: ghcr.io/being24/latex-docker:latest-frozen-amd64,ghcr.io/being24/latex-docker:latest-frozen-arm64
