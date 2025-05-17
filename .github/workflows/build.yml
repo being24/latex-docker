@@ -100,9 +100,12 @@ jobs:
       - name: Create and push manifest images to ghcr.io
         uses: Noelware/docker-manifest-action@0.4.3
         with:
-          inputs: ghcr.io/being24/latex-docker:latest,ghcr.io/being24/latex-docker:${{ needs.prepare.outputs.IMAGE_VERSION }}
-          # inputs: ghcr.io/being24/latex-docker:latest,ghcr.io/being24/latex-docker:${{ needs.prepare.outputs.IMAGE_VERSION }},ghcr.io/being24/latex-docker:2023-frozen
-          images: ghcr.io/being24/latex-docker:latest-amd64,ghcr.io/being24/latex-docker:latest-arm64
+          tags: |
+            ghcr.io/being24/latex-docker:latest
+            ghcr.io/being24/latex-docker:${{ needs.prepare.outputs.IMAGE_VERSION }}
+          inputs: |
+            ghcr.io/being24/latex-docker:latest-amd64
+            ghcr.io/being24/latex-docker:latest-arm64
           push: true
       - name: Create GitHub Releases
         env:
