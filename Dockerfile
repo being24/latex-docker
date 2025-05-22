@@ -50,6 +50,6 @@ RUN tlmgr update --self --all && \
     rm tex-fmt.tar.gz && \
     useradd -m -u 1001 -s /bin/bash latex
 
-USER latex
+USER ubuntu
 
 WORKDIR /workdir
