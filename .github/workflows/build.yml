@@ -17,7 +17,7 @@ jobs:
     outputs:
       image_version: ${{ steps.create_tag.outputs.IMAGE_VERSION }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           fetch-depth: -1
       - name: create tag
@@ -43,7 +43,7 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Build and push
         uses: docker/build-push-action@v6
@@ -69,7 +69,7 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Build and push
         uses: docker/build-push-action@v6
@@ -88,7 +88,7 @@ jobs:
     needs: [prepare, build-amd64, build-arm64]
     if: ${{ github.event_name != 'pull_request' }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           fetch-depth: -1
       - name: Login to ghcr.io
