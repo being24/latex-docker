@@ -28,7 +28,11 @@ docker run -u $(id -u):$(id -g) --rm -v $PWD:/workdir ghcr.io/being24/latex-dock
 | 3.2.6       | 20.04  | 2022(frozen) | amd64, arm64 | docker.io, ghcr.io  |
 | 3.2.8       | 20.04  | 2023         | amd64, arm64 | docker.io, ghcr.io  |
 | 2023-frozen | 22.04  | 2023(frozen) | amd64, arm64 | ghcr.io             |
-| 24.03.2     | 22.04  | 2024         | amd64, arm64 | ghcr.io             |
+| 2024-frozen | 24.04  | 2024(frozen) | amd64, arm64 | ghcr.io             |
+| 2025-frozen | 26.04  | 2025(frozen) | amd64, arm64 | ghcr.io             |
+|latest-frozen| 26.04  | 2025(frozen) | amd64, arm64 | ghcr.io             |
+| latest      | 26.04  | 2026         | amd64, arm64 | ghcr.io             |
+
 
 ## Author
 
