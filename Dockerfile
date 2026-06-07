@@ -13,12 +13,13 @@ RUN mkdir /tmp/install-tl-unx && \
     /bin/echo -e 'selected_scheme scheme-basic\ntlpdbopt_install_docfiles 0\ntlpdbopt_install_srcfiles 0' \
     > /tmp/install-tl-unx/texlive.profile && \
     /tmp/install-tl-unx/install-tl \
-    --repository http://mirror.ctan.org/systems/texlive/tlnet/ \
+    --repository https://ftp.jaist.ac.jp/pub/CTAN/systems/texlive/tlnet \
     -profile /tmp/install-tl-unx/texlive.profile && \
     rm -r /tmp/install-tl-unx && \
     ln -sf /usr/local/texlive/${TEXLIVE_VERSION}/bin/$(uname -m)-linux /usr/local/texlive/bin
 
-RUN tlmgr update --self --all && \
+RUN tlmgr option repository https://ftp.jaist.ac.jp/pub/CTAN/systems/texlive/tlnet && \
+    tlmgr update --self --all && \
     tlmgr install \
     collection-bibtexextra \
     collection-fontsrecommended \
